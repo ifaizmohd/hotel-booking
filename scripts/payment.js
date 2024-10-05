@@ -12,7 +12,7 @@ const userDetails = {
   check_In_Date: "06/06/2020",
   check_Out_Date: "08/06/2020",
   tarrif_Breakdown: "Rs. 1000 x 2 Adults x 5 Nights",
-  total_Amount: "Rs, 10000",
+  total_Amount: "Rs. 10000",
 };
 
 function renderUserDetails() {
