@@ -1,4 +1,5 @@
 import {
+  renderFormField,
   renderImage,
   renderLink,
   renderText,
@@ -65,7 +66,11 @@ function renderLocationsList() {
 
 export function renderHomepageContent() {
   HomePageContent.appendChild(
-    renderText({ text: "Search Bar", component: "div" })
+    renderFormField({
+      fieldName: "searchBar",
+      type: "text",
+      placeholder: "City",
+    })
   );
   const contentContainer = document.getElementById("content-div");
   renderLocationsList();

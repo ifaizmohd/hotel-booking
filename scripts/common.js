@@ -55,6 +55,22 @@ export function renderImage({ src, height, width, alt }) {
 }
 
 function renderLogo() {
+  if (!window?.location?.pathname.includes("index.html")) {
+    const link = renderLink({
+      href: "index.html",
+      target: "_self",
+      innerText: "",
+    });
+    link.appendChild(
+      renderImage({
+        src: "../assests/images/logo.png",
+        height: "100",
+        width: "150",
+        alt: "brand logo",
+      })
+    );
+    return link;
+  }
   return renderImage({
     src: "../assests/images/logo.png",
     height: "100",
@@ -89,13 +105,114 @@ export function renderList(items, type) {
   return document.createElement("div");
 }
 
+export function renderFormField({ labelText, fieldName, type, ...otherProps }) {
+  let label = null;
+  const formField = document.createElement("div");
+  if (labelText) {
+    label = document.createElement("label");
+    setAttributes({ for: fieldName, type, ...otherProps }, label);
+    label.innerText = labelText;
+    formField.appendChild(label);
+  }
+  const inputField = document.createElement("input");
+  setAttributes({ type, id: fieldName, ...otherProps }, inputField);
+  formField.appendChild(inputField);
+  return formField;
+}
+
+export function renderButton({ label, onClick, ...otherProps }) {
+  const button = document.createElement("button");
+  setAttributes(
+    {
+      ...otherProps,
+    },
+    button
+  );
+  if (onClick) {
+    button.addEventListener("click", onClick);
+  }
+  if (label) {
+    button.innerText = label;
+  }
+  return button;
+}
+
+export function renderForm({ action, method, ...otherProps }) {
+  const form = document.createElement("form");
+  if (action) {
+    form.addEventListener("submit", action);
+  }
+  if (method) {
+    setAttributes({ method }, form);
+  }
+  setAttributes({ ...otherProps }, form);
+  return form;
+}
+
+function renderLoginForm() {
+  const userName = renderFormField({
+    labelText: "Username: ",
+    fieldName: "userName",
+    type: "text",
+    required: true,
+    placeholder: "Enter Username",
+  });
+  const password = renderFormField({
+    labelText: "Password: ",
+    fieldName: "password",
+    type: "password",
+    required: true,
+    placeholder: "Enter Password",
+  });
+  const loginButton = renderButton({
+    label: "Login",
+    type: "submit",
+  });
+  const onClick = (e) => {
+    e.preventDefault();
+    const usernameVal = document.getElementById("userName").value;
+    const passwordVal = document.getElementById("password").value;
+    if (usernameVal && passwordVal) {
+      const redirectedUrl = `index.html?username=${usernameVal}&password=${passwordVal}`;
+      window.location.href = redirectedUrl;
+    }
+  };
+  const formContainer = renderForm({ action: onClick });
+  const loginContainer = document.getElementById("content-div");
+  formContainer.append(userName, password, loginButton);
+  loginContainer.appendChild(formContainer);
+}
+
+function renderContactUsForm() {
+  const emailField = renderFormField({
+    fieldName: "email",
+    type: "email",
+    placeholder: "Enter your email",
+    required: true,
+  });
+  const button = renderButton({ label: "Submit", type: "submit" });
+  const onClick = (e) => {
+    e.preventDefault();
+    const emailField = document.getElementById("email").value;
+    console.log(emailField);
+    if (emailField) {
+      const redirectedUrl = `index.html?email=${emailField}`;
+      window.location.href = redirectedUrl;
+    }
+  };
+  const contactUsForm = renderForm({ action: onClick });
+  contactUsForm.append(emailField, button);
+  const formWrapper = document.getElementById("content-div");
+  formWrapper.appendChild(contactUsForm);
+}
+
 function renderGlobalHeader() {
   const headerDiv = document.getElementsByClassName("header-div")[0];
   GlobalHeader.appendChild(renderLogo());
   GlobalHeader.appendChild(
     renderLink({ href: "../login.html", target: "_blank", innerText: "Login" })
   );
-  headerDiv.appendChild(GlobalHeader);
+  if (headerDiv) headerDiv.appendChild(GlobalHeader);
 }
 
 function renderFooter() {
@@ -127,7 +244,7 @@ function renderFooter() {
     renderText({ text: "© 2020 ROOM SEARCH PVT. LTD.", component: "div" })
   );
   const footerContainer = document.getElementById("footer-div");
-  footerContainer.appendChild(GlobalFooter);
+  if (footerContainer) footerContainer.appendChild(GlobalFooter);
 }
 
 window.addEventListener("load", () => {
@@ -141,6 +258,10 @@ window.addEventListener("load", () => {
     renderDetailsPageContent();
   } else if (pathname.includes("payment.html")) {
     renderPaymentContent();
+  } else if (pathname.includes("login.html")) {
+    renderLoginForm();
+  } else if (pathname.includes("contact.html")) {
+    renderContactUsForm();
   }
   renderFooter();
 });
